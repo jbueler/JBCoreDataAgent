@@ -1,9 +1,6 @@
 //
 //  JBCoreDataAgent.h
-//  RoundhouseEmployeeList
-//
 //  Created by Jeremy Bueler on 8/12/13.
-//  Copyright (c) 2013 Jeremy Bueler. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
