@@ -14,21 +14,23 @@
 @property (readonly, nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (readonly, nonatomic, strong) NSManagedObjectModel *managedObjectModel;
 @property (readonly, nonatomic, strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic, strong) NSMutableDictionary *controllers;
+
 
 -(id) initWithStoreName: (NSString *)storeName;
 -(void) saveContext;
 -(NSURL *) applicationDocumentsDirectory;
 
--(NSFetchedResultsController *) fetchedResultsController;
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName;
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *)entityName sortByKey: (NSString *) sortKey;
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey andDelegate: (id) delegate;
 
-//-(NSManagedObject *) insertEntityWIthName: (NSString *) name;
--(NSManagedObject *) createEntityWithName: (NSString *) name;
--(void) performFetch;
+-(NSManagedObject *) insertEntityWithName: (NSString *) name;
+//-(NSManagedObject *) createEntityWithName: (NSString *) name;
 
-//
+-(void) performFetchForEntityOfName: (NSString *) entityName;
+-(NSManagedObject *) fetchEntityOfName: (NSString *)entityName atIndexPath: (NSIndexPath *)indexPath;
+
 //-(NSFetchRequest *) fetchRequestWithEntityName: (NSString * ) name;
 //-(NSArray *) fetchAllEntitiesOfName: (NSString *) name;
 //-(NSArray *) fetchAllEntitiesOfName:(NSString *)name withPredicateString: (NSString *) predicateString, ...;

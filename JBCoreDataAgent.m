@@ -10,7 +10,7 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize  persistentStoreCoordinator = _persistentStoreCoordinator;
-@synthesize fetchedResultsController = _fetchedResultsController;
+@synthesize controllers = _controllers;
 
 
 -(id) init{
@@ -22,6 +22,7 @@
 		_storeName = storeName;
 	}
 	[self managedObjectContext];
+	_controllers = [[NSMutableDictionary alloc] init];
 	return self;
 }
 
@@ -67,8 +68,7 @@
 		removeSuccess = NO;
 		NSLog(@"Error removing asset at path: %@\n\t%@", [storeURL path], [error localizedDescription]);
 	}
-	
-	
+
 	// Reset ivars to nil.
 	if (removeSuccess) {
 		_managedObjectContext = nil;
@@ -79,8 +79,8 @@
 
 
 #pragma mark - Setup Fetched Results Controller
--(NSFetchedResultsController *) fetchedResultsController{
-	return [self fetchedResultsControllerWithEntityName: @"Employee" sortByKey: @"firstname"];
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName:(NSString *)entityName{
+	return [self fetchedResultsControllerWithEntityName:entityName sortByKey:nil];
 }
 
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey: (NSString *)sortKey{
@@ -88,9 +88,10 @@
 }
 
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey andDelegate: (id) delegate{
-	if (_fetchedResultsController != nil) {
-		return _fetchedResultsController;
+	if ([_controllers valueForKey:entityName] != nil ){
+		return [_controllers valueForKey:entityName];
 	}
+	
 	//	CREATE FETCH REQUEST
 	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
 	
@@ -107,10 +108,10 @@
 	
 	//	CREATE THE FETCHED RESULTS CONTROLLER AND RETURN IT
 	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath:nil cacheName:@"Root"];
-	self.fetchedResultsController = fetchedController;
-	_fetchedResultsController.delegate = delegate;
-	return _fetchedResultsController;
-
+	fetchedController.delegate = delegate;
+	[_controllers setValue:fetchedController forKey:entityName];
+	NSLog(@"CONTROLLERS %@",_controllers);
+	return fetchedController;
 }
 
 #pragma mark - Core Data stack
@@ -163,12 +164,7 @@
 	if (_persistentStoreCoordinator != nil) {
 		return _persistentStoreCoordinator;
 	}
-	
-	//	NSString *storeName = [[NSString alloc] initWithFormat:@"%@.sqlite", _storeName];
-	//	NSURL *storeURL = [[self applicationDocumentsDirectory] URLByAppendingPathComponent:storeName];
-	//	[storeName release];
 	NSURL *storeURL = [self storePathURL];
-	
 	NSError *error = nil;
 	_persistentStoreCoordinator = [[NSPersistentStoreCoordinator alloc] initWithManagedObjectModel:[self managedObjectModel]];
 	if (![_persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nil URL:storeURL options:nil error:&error]) {
@@ -212,10 +208,10 @@
 }
 
 # pragma mark - Create Edit Delete Entities
--(void) performFetch{
+-(void) performFetchForEntityOfName:(NSString *)entityName{
+	NSFetchedResultsController *frc = [_controllers valueForKey:entityName];
 	NSError *error;
-	
-	if (! [_fetchedResultsController performFetch:&error]) {
+	if (frc == nil || ![frc performFetch:&error]) {
 		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 		exit(-1); // FAIL
 	}
@@ -223,6 +219,11 @@
 
 -(NSManagedObject *) insertEntityWithName:(NSString *)name{
 	return [NSEntityDescription insertNewObjectForEntityForName: name inManagedObjectContext: _managedObjectContext];
+}
+
+-(NSManagedObject *) fetchEntityOfName:(NSString *)entityName atIndexPath:(NSIndexPath *)indexPath{
+	NSFetchedResultsController *frc = (NSFetchedResultsController *)[_controllers valueForKey:entityName];
+	return [frc objectAtIndexPath:indexPath];
 }
 
 
