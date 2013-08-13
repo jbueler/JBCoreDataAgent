@@ -221,7 +221,7 @@
 	}
 }
 
--(NSManagedObject *) createEntityWithName:(NSString *)name{
+-(NSManagedObject *) insertEntityWithName:(NSString *)name{
 	return [NSEntityDescription insertNewObjectForEntityForName: name inManagedObjectContext: _managedObjectContext];
 }
 
