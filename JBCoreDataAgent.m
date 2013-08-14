@@ -226,6 +226,17 @@
 	return [frc objectAtIndexPath:indexPath];
 }
 
+-(NSUInteger) numberOfSectionsForEntity:(NSString *)entityName{
+	NSFetchedResultsController *frc = [_controllers valueForKey: entityName];
+	return [frc.sections count];
+}
+
+-(NSUInteger) numberOfObjectsForSection:(NSInteger)section withName:(NSString *)entityName{
+	NSFetchedResultsController *frc = [_controllers valueForKey: entityName];
+	id sectionInfo = [frc.sections objectAtIndex: section];
+    return [sectionInfo numberOfObjects];
+}
+
 
 
 @end
