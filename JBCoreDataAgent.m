@@ -26,12 +26,13 @@
 	return self;
 }
 
+
 - (void)saveContext {
 	NSError *error = nil;
 	NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
-	//	NSLog(@"Do we have an MOC? %@", managedObjectContext);
+//	NSLog(@"Do we have an MOC? %@", managedObjectContext);
 	if (managedObjectContext != nil) {
-		//		NSLog(@"Yup...");
+//		NSLog(@"Yup...");
 		if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
 			/*
 			 Replace this implementation with code to handle the error appropriately.
@@ -42,7 +43,7 @@
 			abort();
 		}
 	} else {
-		//		NSLog(@"Nope.");
+//		NSLog(@"Nope.");
 	}
 }
 
@@ -106,11 +107,16 @@
 	//	AND THE BATCH SIZE BASICALLY THE SQL LIMIT
 	[fetchRequest setFetchBatchSize:20];
 	
+	NSString * sectionNameKeyPath = @"lastname";
+	if ([entityName isEqualToString:@"Event"]) {
+		sectionNameKeyPath = nil;
+	}
+	
 	//	CREATE THE FETCHED RESULTS CONTROLLER AND RETURN IT
-	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath:nil cacheName:@"Root"];
+	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath:sectionNameKeyPath cacheName:@"Root"];
 	fetchedController.delegate = delegate;
 	[_controllers setValue:fetchedController forKey:entityName];
-	NSLog(@"CONTROLLERS %@",_controllers);
+//	NSLog(@"CONTROLLERS %@",_controllers);
 	return fetchedController;
 }
 
@@ -131,9 +137,9 @@
 		[_managedObjectContext setPersistentStoreCoordinator:coordinator];
 	}
 	
-	NSLog(@"MOC staleness:%f", [_managedObjectContext stalenessInterval]);
+//	NSLog(@"MOC staleness:%f", [_managedObjectContext stalenessInterval]);
 	[_managedObjectContext setStalenessInterval:0.0];
-	NSLog(@"MOC staleness:%f", [_managedObjectContext stalenessInterval]);
+//	NSLog(@"MOC staleness:%f", [_managedObjectContext stalenessInterval]);
 	
 	return _managedObjectContext;
 }
@@ -209,7 +215,10 @@
 
 # pragma mark - Create Edit Delete Entities
 -(void) performFetchForEntityOfName:(NSString *)entityName{
-	NSFetchedResultsController *frc = [_controllers valueForKey:entityName];
+	NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName: entityName];
+	if (!frc) {
+		frc = [self fetchedResultsControllerWithEntityName: entityName];
+	}
 	NSError *error;
 	if (frc == nil || ![frc performFetch:&error]) {
 		NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
@@ -218,21 +227,39 @@
 }
 
 -(NSManagedObject *) insertEntityWithName:(NSString *)name{
+	NSLog(@"Managed Object Context %@", _managedObjectContext);
 	return [NSEntityDescription insertNewObjectForEntityForName: name inManagedObjectContext: _managedObjectContext];
 }
 
 -(NSManagedObject *) fetchEntityOfName:(NSString *)entityName atIndexPath:(NSIndexPath *)indexPath{
-	NSFetchedResultsController *frc = (NSFetchedResultsController *)[_controllers valueForKey:entityName];
+	NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName: entityName];
 	return [frc objectAtIndexPath:indexPath];
 }
 
+-(NSString *) sectionTitle:(NSString *)entityName forSection:(NSUInteger)section{
+	id <NSFetchedResultsSectionInfo> sectionInfo = [self sectionInfo:section ofEntity:entityName];
+	return [sectionInfo name];
+}
+
+-(id <NSFetchedResultsSectionInfo>) sectionInfo: (NSUInteger) section ofEntity:(NSString *) entityName{
+	NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName:entityName];
+	
+	if ([[frc sections] count] > 0) {
+        id <NSFetchedResultsSectionInfo> sectionInfo = [[frc sections] objectAtIndex:section];
+        return sectionInfo;
+    }
+	else{
+        return nil;
+	}
+}
+
 -(NSUInteger) numberOfSectionsForEntity:(NSString *)entityName{
-	NSFetchedResultsController *frc = [_controllers valueForKey: entityName];
+	NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName: entityName];
 	return [frc.sections count];
 }
 
 -(NSUInteger) numberOfObjectsForSection:(NSInteger)section withName:(NSString *)entityName{
-	NSFetchedResultsController *frc = [_controllers valueForKey: entityName];
+	NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName: entityName];
 	id sectionInfo = [frc.sections objectAtIndex: section];
     return [sectionInfo numberOfObjects];
 }

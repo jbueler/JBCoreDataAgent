@@ -31,6 +31,10 @@
 -(void) performFetchForEntityOfName: (NSString *) entityName;
 -(NSManagedObject *) fetchEntityOfName: (NSString *)entityName atIndexPath: (NSIndexPath *)indexPath;
 
+-(NSString*) sectionTitle:(NSString *)entityName forSection:(NSUInteger) section;
+-(id <NSFetchedResultsSectionInfo>) sectionInfo: (NSUInteger) section ofEntity:(NSString *) entityName;
+
+
 -(NSUInteger) numberOfSectionsForEntity: (NSString *) entityName;
 -(NSUInteger) numberOfObjectsForSection: (NSInteger) section withName: (NSString *) entityName;
 
