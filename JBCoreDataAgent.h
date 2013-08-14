@@ -23,7 +23,7 @@
 
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName;
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *)entityName sortByKey: (NSString *) sortKey;
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey andDelegate: (id) delegate;
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate;
 
 -(NSManagedObject *) insertEntityWithName: (NSString *) name;
 //-(NSManagedObject *) createEntityWithName: (NSString *) name;
@@ -37,6 +37,7 @@
 
 -(NSUInteger) numberOfSectionsForEntity: (NSString *) entityName;
 -(NSUInteger) numberOfObjectsForSection: (NSInteger) section withName: (NSString *) entityName;
+-(NSUInteger) numberOfObjectsForEntity: (NSString *) entityName;
 
 //-(NSFetchRequest *) fetchRequestWithEntityName: (NSString * ) name;
 //-(NSArray *) fetchAllEntitiesOfName: (NSString *) name;

@@ -85,10 +85,10 @@
 }
 
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey: (NSString *)sortKey{
-	return [self fetchedResultsControllerWithEntityName: entityName sortByKey:sortKey andDelegate: self];
+	return [self fetchedResultsControllerWithEntityName: entityName sortByKey:sortKey sectionNameKeyPath:nil andDelegate: self];
 }
 
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey andDelegate: (id) delegate{
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate{
 	if ([_controllers valueForKey:entityName] != nil ){
 		return [_controllers valueForKey:entityName];
 	}
@@ -106,14 +106,10 @@
 	
 	//	AND THE BATCH SIZE BASICALLY THE SQL LIMIT
 	[fetchRequest setFetchBatchSize:20];
-	
-	NSString * sectionNameKeyPath = @"lastname";
-	if ([entityName isEqualToString:@"Event"]) {
-		sectionNameKeyPath = nil;
-	}
-	
+
+	NSLog(@"sectionNameKeyPath = %@", sectionNameKeyPath);
 	//	CREATE THE FETCHED RESULTS CONTROLLER AND RETURN IT
-	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath:sectionNameKeyPath cacheName:@"Root"];
+	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath: sectionNameKeyPath cacheName: @"Root"];
 	fetchedController.delegate = delegate;
 	[_controllers setValue:fetchedController forKey:entityName];
 //	NSLog(@"CONTROLLERS %@",_controllers);
@@ -238,7 +234,12 @@
 
 -(NSString *) sectionTitle:(NSString *)entityName forSection:(NSUInteger)section{
 	id <NSFetchedResultsSectionInfo> sectionInfo = [self sectionInfo:section ofEntity:entityName];
-	return [sectionInfo name];
+	if (sectionInfo) {
+		return [sectionInfo name];
+	}
+	else{
+		return nil;
+	}
 }
 
 -(id <NSFetchedResultsSectionInfo>) sectionInfo: (NSUInteger) section ofEntity:(NSString *) entityName{
@@ -259,9 +260,19 @@
 }
 
 -(NSUInteger) numberOfObjectsForSection:(NSInteger)section withName:(NSString *)entityName{
+	if ([self numberOfSectionsForEntity:entityName] > 0) {
+		NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName: entityName];
+		id sectionInfo = [frc.sections objectAtIndex: section];
+		return [sectionInfo numberOfObjects];
+	}
+	else{
+		return 0;
+	}
+}
+
+-(NSUInteger) numberOfObjectsForEntity: (NSString *) entityName{
 	NSFetchedResultsController *frc = [self fetchedResultsControllerWithEntityName: entityName];
-	id sectionInfo = [frc.sections objectAtIndex: section];
-    return [sectionInfo numberOfObjects];
+	return [frc.fetchedObjects count];
 }
 
 

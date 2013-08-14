@@ -29,3 +29,6 @@ include JBCoreDataAgent in the project. In the app delegate or view controller `
 	}
 
 
+### Credit to:
+Dru Kepple for kicking ass and coming up with this idea. https://github.com/drukepple
+
