@@ -109,7 +109,7 @@
 
 	NSLog(@"sectionNameKeyPath = %@", sectionNameKeyPath);
 	//	CREATE THE FETCHED RESULTS CONTROLLER AND RETURN IT
-	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath: sectionNameKeyPath cacheName: @"Root"];
+	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath: @"name" cacheName: @"Root"];
 	fetchedController.delegate = delegate;
 	[_controllers setValue:fetchedController forKey:entityName];
 //	NSLog(@"CONTROLLERS %@",_controllers);
