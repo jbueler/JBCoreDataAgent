@@ -101,15 +101,15 @@
 	[fetchRequest setEntity:entity];
 	
 	//	SET THE SORT ORDER OF THE RECORD SET
-	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey: sortKey ascending: YES];
+	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey: sortKey ascending: NO];
 	[fetchRequest setSortDescriptors:@[sort]];
 	
 	//	AND THE BATCH SIZE BASICALLY THE SQL LIMIT
 	[fetchRequest setFetchBatchSize:20];
 
-	NSLog(@"sectionNameKeyPath = %@", sectionNameKeyPath);
 	//	CREATE THE FETCHED RESULTS CONTROLLER AND RETURN IT
-	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath: @"name" cacheName: @"Root"];
+	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath: sectionNameKeyPath cacheName: @"Root"];
+	
 	fetchedController.delegate = delegate;
 	[_controllers setValue:fetchedController forKey:entityName];
 //	NSLog(@"CONTROLLERS %@",_controllers);
@@ -225,6 +225,12 @@
 -(NSManagedObject *) insertEntityWithName:(NSString *)name{
 	NSLog(@"Managed Object Context %@", _managedObjectContext);
 	return [NSEntityDescription insertNewObjectForEntityForName: name inManagedObjectContext: _managedObjectContext];
+}
+
+- (NSManagedObject *) createEntityWithName:(NSString *)name {
+	NSEntityDescription *ent = [NSEntityDescription entityForName:name inManagedObjectContext:self.managedObjectContext];
+	NSManagedObject *mo = [[NSManagedObject alloc] initWithEntity:ent insertIntoManagedObjectContext:nil];
+	return mo;
 }
 
 -(NSManagedObject *) fetchEntityOfName:(NSString *)entityName atIndexPath:(NSIndexPath *)indexPath{

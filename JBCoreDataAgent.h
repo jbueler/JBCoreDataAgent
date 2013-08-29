@@ -26,7 +26,7 @@
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate;
 
 -(NSManagedObject *) insertEntityWithName: (NSString *) name;
-//-(NSManagedObject *) createEntityWithName: (NSString *) name;
+-(NSManagedObject *) createEntityWithName: (NSString *) name;
 
 -(void) performFetchForEntityOfName: (NSString *) entityName;
 -(NSManagedObject *) fetchEntityOfName: (NSString *)entityName atIndexPath: (NSIndexPath *)indexPath;
