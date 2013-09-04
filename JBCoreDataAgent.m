@@ -30,9 +30,9 @@
 - (void)saveContext {
 	NSError *error = nil;
 	NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
-//	NSLog(@"Do we have an MOC? %@", managedObjectContext);
+	NSLog(@"Do we have an MOC? %@", managedObjectContext);
 	if (managedObjectContext != nil) {
-//		NSLog(@"Yup...");
+		NSLog(@"Yup... %d",[managedObjectContext hasChanges]);
 		if ([managedObjectContext hasChanges] && ![managedObjectContext save:&error]) {
 			/*
 			 Replace this implementation with code to handle the error appropriately.
@@ -42,8 +42,11 @@
 			NSLog(@"Unresolved error %@, %@", error, [error userInfo]);
 			abort();
 		}
+		else{
+			NSLog(@"SAVED %@",managedObjectContext.registeredObjects);
+		}
 	} else {
-//		NSLog(@"Nope.");
+		NSLog(@"Nope.");
 	}
 }
 
@@ -81,31 +84,35 @@
 
 #pragma mark - Setup Fetched Results Controller
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName:(NSString *)entityName{
-	return [self fetchedResultsControllerWithEntityName:entityName sortByKey:nil];
+	return [self fetchedResultsControllerWithEntityName:entityName sortByKey:nil andPredicate:nil];
 }
 
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey: (NSString *)sortKey{
-	return [self fetchedResultsControllerWithEntityName: entityName sortByKey:sortKey sectionNameKeyPath:nil andDelegate: self];
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey: (NSString *)sortKey andPredicate:(NSPredicate *)predicate{
+	return [self fetchedResultsControllerWithEntityName: entityName sortByKey:sortKey predicate: predicate sectionNameKeyPath:nil andDelegate:self];
 }
 
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate{
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey predicate: (NSPredicate *)predicate sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate{
 	if ([_controllers valueForKey:entityName] != nil ){
 		return [_controllers valueForKey:entityName];
 	}
 	
 	//	CREATE FETCH REQUEST
 	NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-	
+
 	//	CREATE ENTITY DESCRIPTION - THE MODEL WE ARE FETCHING
 	NSEntityDescription *entity = [NSEntityDescription entityForName: entityName inManagedObjectContext: _managedObjectContext];
 	[fetchRequest setEntity:entity];
 	
 	//	SET THE SORT ORDER OF THE RECORD SET
-	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey: sortKey ascending: NO];
+	NSSortDescriptor *sort = [[NSSortDescriptor alloc] initWithKey: sortKey ascending: YES];
 	[fetchRequest setSortDescriptors:@[sort]];
 	
 	//	AND THE BATCH SIZE BASICALLY THE SQL LIMIT
 	[fetchRequest setFetchBatchSize:20];
+
+	if (predicate) {
+		[fetchRequest setPredicate:predicate];
+	}
 
 	//	CREATE THE FETCHED RESULTS CONTROLLER AND RETURN IT
 	NSFetchedResultsController *fetchedController = [[NSFetchedResultsController alloc] initWithFetchRequest: fetchRequest managedObjectContext:_managedObjectContext sectionNameKeyPath: sectionNameKeyPath cacheName: @"Root"];

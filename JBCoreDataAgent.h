@@ -22,8 +22,8 @@
 -(NSURL *) applicationDocumentsDirectory;
 
 -(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName;
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *)entityName sortByKey: (NSString *) sortKey;
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate;
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *)entityName sortByKey: (NSString *) sortKey andPredicate: (NSPredicate *)predicate;
+-(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey predicate: (NSPredicate *)predicate sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate;
 
 -(NSManagedObject *) insertEntityWithName: (NSString *) name;
 -(NSManagedObject *) createEntityWithName: (NSString *) name;
