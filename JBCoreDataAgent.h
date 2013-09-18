@@ -6,42 +6,43 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@interface JBCoreDataAgent : NSObject{
-	NSManagedObjectContext * _managedObjectContext;
-	NSString *_storeName;
-}
+//
+//  JBCoreDataAgent.h
 
-@property (readonly, nonatomic, strong) NSManagedObjectContext *managedObjectContext;
-@property (readonly, nonatomic, strong) NSManagedObjectModel *managedObjectModel;
-@property (readonly, nonatomic, strong) NSPersistentStoreCoordinator *persistentStoreCoordinator;
-@property (nonatomic, strong) NSMutableDictionary *controllers;
+//  Created by Jeremy Bueler on 9/18/13.
+//  Copyright (c) 2013 Jeremy Bueler. All rights reserved.
+//
 
+#import <Foundation/Foundation.h>
 
--(id) initWithStoreName: (NSString *)storeName;
--(void) saveContext;
--(NSURL *) applicationDocumentsDirectory;
+@interface JBCoreDataAgent : NSObject
+@property (readonly, strong, nonatomic) NSManagedObjectContext *managedObjectContext;
+@property (readonly, strong, nonatomic) NSManagedObjectModel *managedObjectModel;
+@property (readonly, strong, nonatomic) NSPersistentStoreCoordinator *persistentStoreCoordinator;
 
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName;
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *)entityName sortByKey: (NSString *) sortKey andPredicate: (NSPredicate *)predicate;
--(NSFetchedResultsController *) fetchedResultsControllerWithEntityName: (NSString *) entityName sortByKey:(NSString *)sortKey predicate: (NSPredicate *)predicate sectionNameKeyPath: (NSString *) sectionNameKeyPath andDelegate: (id) delegate;
+@property (strong, nonatomic) NSString *storeName;
+@property (strong, nonatomic) id delegate;
 
--(NSManagedObject *) insertEntityWithName: (NSString *) name;
--(NSManagedObject *) createEntityWithName: (NSString *) name;
+- (id) initWithStoreName:(NSString *)storeName andDelegate:(id)delegate;
+- (void)saveContext;
+- (NSURL *)applicationDocumentsDirectory;
+- (void) deleteCache;
 
--(void) performFetchForEntityOfName: (NSString *) entityName;
--(NSManagedObject *) fetchEntityOfName: (NSString *)entityName atIndexPath: (NSIndexPath *)indexPath;
+#pragma mark - Creating Entities
+- (NSManagedObject *) insertEntityWithName:(NSString *)name;
 
--(NSString*) sectionTitle:(NSString *)entityName forSection:(NSUInteger) section;
--(id <NSFetchedResultsSectionInfo>) sectionInfo: (NSUInteger) section ofEntity:(NSString *) entityName;
+#pragma mark - Delete entries
+-(void) deleteObjectAtIndexPath: (NSIndexPath *)indexPath inFetchedResultsController: (NSFetchedResultsController *) frc;
 
+#pragma mark - Fetching
+#pragma mark Fetch Requests
+-(NSFetchRequest *)fetchRequest: (NSString *) entityName;
+-(NSFetchRequest *)fetchRequest: (NSString *) entityName andSort:(NSString *)sortKey ascending:(BOOL)direction;
+-(NSFetchRequest *)fetchRequest: (NSString *) entityName andSort:(NSString *)sortKey ascending:(BOOL)direction andWithPredicate:(NSString *)predicateString, ...;
+-(NSArray *) performFetchWithFetchRequest: (NSFetchRequest *)fr;
 
--(NSUInteger) numberOfSectionsForEntity: (NSString *) entityName;
--(NSUInteger) numberOfObjectsForSection: (NSInteger) section withName: (NSString *) entityName;
--(NSUInteger) numberOfObjectsForEntity: (NSString *) entityName;
-
-//-(NSFetchRequest *) fetchRequestWithEntityName: (NSString * ) name;
-//-(NSArray *) fetchAllEntitiesOfName: (NSString *) name;
-//-(NSArray *) fetchAllEntitiesOfName:(NSString *)name withPredicateString: (NSString *) predicateString, ...;
-
-
+#pragma mark FetchResultsController
+-(NSFetchedResultsController *) fetchedResultsControllerWithFetchRequest:(NSFetchRequest *)fetchRequest;
+-(NSManagedObject *) objectAtIndexPath:(NSIndexPath *)indexPath inFetchedResultsController: (NSFetchedResultsController *)frc;
+-(void) performFetchWithFetchResultsController: (NSFetchedResultsController *)frc;
 @end
