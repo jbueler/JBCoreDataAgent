@@ -1,6 +1,6 @@
 //
-//  CoreDataAgent.m
-//  CoreDataAgent-Refactor
+//  JBCoreDataAgent.m
+//  JBCoreDataAgent
 //
 //  Created by Jeremy Bueler on 9/18/13.
 //  Copyright (c) 2013 Jeremy Bueler. All rights reserved.

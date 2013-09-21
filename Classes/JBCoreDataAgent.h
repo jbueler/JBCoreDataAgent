@@ -1,7 +1,7 @@
 //
 //  JBCoreDataAgent.h
 //  Created by Jeremy Bueler on 8/12/13.
-//
+//  Inspired by Dru Kepple
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
