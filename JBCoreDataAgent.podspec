@@ -73,7 +73,7 @@ Pod::Spec.new do |s|
   #  Supports git, hg, svn and HTTP.
   #
 
-  s.source       = { :git => "https://github.com/jbueler/JBCoreDataAgent", :tag => "0.0.2" }
+  s.source       = { :git => "https://github.com/jbueler/JBCoreDataAgent", :tag => "0.0.3" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
